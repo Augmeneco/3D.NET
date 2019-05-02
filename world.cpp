@@ -4,7 +4,7 @@
 #include <utility>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
-#include "nlohmann/json.hpp"
+#include <nlohmann/json.hpp>
 #include "world.h"
 
 using json = nlohmann::json;
