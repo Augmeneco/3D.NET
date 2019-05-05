@@ -4,7 +4,7 @@
 #include <utility>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
-#include <nlohmann/json.hpp>
+#include "nlohmann/json.hpp"
 #include "world.h"
 
 using json = nlohmann::json;
@@ -20,16 +20,18 @@ void loadNearScenesThreadFunc(World* world)
             continue;
         }
 
-        sf::Vector2i vec = world->queueToLoad.front();
+        sf::Vector2i coordinatesToLoad = world->queueToLoad.front();
         world->queueToLoad.pop();
         world->queueToLoadMutex->unlock();
 
-        printf("Connecting to chunk on IP: %s\n", world->dimToIp(vec, 65565).toString().c_str());
+        sf::IpAddress ipToLoad = world->dimToIp(coordinatesToLoad, 65565);
+
+        printf("Connecting to chunk on IP: %s\n", ipToLoad.toString().c_str());
 
         const char req_get[] = "GET";
         sf::TcpSocket socket;
         socket.setBlocking(true);
-        sf::Socket::Status status = socket.connect(world->dimToIp(vec, 65565), 53534, sf::seconds(5.0f));
+        sf::Socket::Status status = socket.connect(ipToLoad, 53534, sf::seconds(5.0f));
         if (status != sf::Socket::Done)
         {
             printf("Socket not connected\n");
@@ -55,7 +57,7 @@ void loadNearScenesThreadFunc(World* world)
             //Теперь обрезает начало у каждого буффера
             //std::copy(&buffer[1], &buffer[receivedBytes], response.end());
             response += buffer;
-            puts(buffer);
+            //puts(buffer);
         }
         while (receivedBytes >= 100);
 
@@ -68,7 +70,7 @@ void loadNearScenesThreadFunc(World* world)
 //            continue;
 //        }
 
-        puts(response.c_str());
+        //puts(response.c_str());
 
         try
         {
@@ -77,7 +79,7 @@ void loadNearScenesThreadFunc(World* world)
             bool prevLineIsBlank = false;
             for (std::string line : world->explode(response, '\n'))
             {
-                std::cout << line << std::endl;
+                //std::cout << line << std::endl;
                 if (lineCount == 0)
                 {
                     if ((world->explode(line, ' ')[1] != "200"))
@@ -94,27 +96,33 @@ void loadNearScenesThreadFunc(World* world)
                     prevLineIsBlank = true;
 
                 lineCount++;
-                //Добавить поддержку хедеров:
             }
-            std::cout << "BODY:\n" << body.c_str() << std::endl;
-            //Добавить поддержку хедеров:
+            //std::cout << "BODY:\n" << body.c_str() << std::endl;
             auto sceneUnparsed = json::parse(body);
 
-            Scene* scene = new Scene();
+            Scene* scene = nullptr;
+
+            world->scenesArrayMutex->lock();
+            for (Scene* s : world->scenes)
+                if (s->coordinates == coordinatesToLoad)
+                    scene = s;
+            world->scenesArrayMutex->unlock();
 
             for(auto childNode : sceneUnparsed["childs"])
             {
                 world->parseResult(childNode, scene->rootObject, scene);
             }
 
-            world->loadedScenesMutex->lock();
-            world->loadedScenes.push_back(std::make_pair(vec, scene));
-            world->loadedScenesMutex->unlock();
+            scene->lastUpdateTime.restart();
+
+            world->scenesArrayMutex->lock();
+            world->scenes.push_back(scene);
+            world->scenesArrayMutex->unlock();
         }
         catch(...)
         {
             printf("Error while parse server response\n");
-            world->loadedScenesMutex->unlock();
+            world->scenesArrayMutex->unlock();
             continue;
         }
     }
@@ -122,7 +130,7 @@ void loadNearScenesThreadFunc(World* world)
 
 World::World(): loadNearScenesThread(&loadNearScenesThreadFunc, this)
 {
-    this->loadedScenesMutex = new sf::Mutex();
+    this->scenesArrayMutex = new sf::Mutex();
     this->queueToLoadMutex = new sf::Mutex();
 
     this->loadNearScenesThread.launch();
@@ -157,7 +165,7 @@ void World::parseResult(auto node, Object* parentObj, Scene* scene)
             for (auto vertex : node["components"]["model"]["verticies"])
             {
                 obj->model->verticies.push_back(std::array<float, 3>{{vertex[0], vertex[1], vertex[2]}});
-                printf("%g, %g, %g\n", (float)vertex[0], (float)vertex[1], (float)vertex[2]);
+                //printf("%g, %g, %g\n", (float)vertex[0], (float)vertex[1], (float)vertex[2]);
             }
         }
     }
@@ -179,7 +187,7 @@ sf::Vector2i World::ipToDim(sf::IpAddress ip, int w)
 
 sf::IpAddress World::dimToIp(sf::Vector2i vec, int w)
 {
-    return sf::IpAddress((vec.x + (w * vec.y)));
+    return sf::IpAddress(vec.x + (w * vec.y));
 }
 
 std::vector<std::string> World::explode(std::string const & s, char delim)

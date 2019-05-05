@@ -7,9 +7,7 @@ Scene::Scene()
     obj->rootObject = obj;
     obj->setTag("root");
 
-//    Object* obj = new Object();
-//
-//    this->rootObject = obj;
+    this->lastUpdateTime = sf::Clock();
 }
 
 Object* Scene::createObject(Object* parentObj)

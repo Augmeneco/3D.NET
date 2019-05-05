@@ -10,7 +10,8 @@ class Program
 {
 public:
     static Program* instance;
-    int maxFPS = 0;
+    float fps;
+    int maxFPS;
     bool mouseLock;
     bool consoleOpened;
     sf::RenderWindow* window;
@@ -25,6 +26,7 @@ public:
     void run();
     void render();
     void renderSceneObjects(Object* obj, sf::Vector2i scenePos);
+    void addSceneToLoad(sf::Vector2i sceneCoord);
 };
 
 #endif // PROGRAM_H

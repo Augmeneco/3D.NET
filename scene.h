@@ -11,6 +11,7 @@ class Scene
 public:
     sf::Vector2i coordinates;
     sf::IpAddress ip;
+    sf::Clock lastUpdateTime;
     Object* rootObject;
 
     Scene();

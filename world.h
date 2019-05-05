@@ -13,9 +13,9 @@ class World
 {
 public:
     sf::Thread loadNearScenesThread;
-    std::vector< std::pair<sf::Vector2i, Scene*> > loadedScenes;
+    std::vector<Scene*> scenes;
     std::queue<sf::Vector2i> queueToLoad;
-    sf::Mutex* loadedScenesMutex;
+    sf::Mutex* scenesArrayMutex;
     sf::Mutex* queueToLoadMutex;
 
     World();

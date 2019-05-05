@@ -18,7 +18,7 @@ Camera::Camera(float x, float y, float z)
     this->transform.y = y;
     this->transform.z = z;
 
-    this->activeChunk = sf::Vector2i(0, 0);
+    this->activeChunk = sf::Vector2i((int)x, (int)z);
 }
 
 void Camera::moveTo(float x, float y, float z)
