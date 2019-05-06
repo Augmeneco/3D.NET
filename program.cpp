@@ -162,6 +162,7 @@ void Program::run()
 void Program::render()
 {
     sf::Vector2i localPosition = sf::Mouse::getPosition(*this->window);
+    //printf("%d %d\n", (this->window->getSize().x / 2), (this->window->getSize().y / 2));
     float deltaX = localPosition.x - 300;
     float deltaY = localPosition.y - 300;
     float sensitivity = 0.05f;
@@ -202,9 +203,9 @@ void Program::render()
     }
 
 
-    this->camera.renderingCoords.x = (this->camera.transform.x) - (this->camera.activeChunk.x * 20) - 10;
+    this->camera.renderingCoords.x = this->camera.transform.x - (this->camera.activeChunk.x * 20) - 10;
     this->camera.renderingCoords.y = 1;
-    this->camera.renderingCoords.z = (this->camera.transform.z) - (this->camera.activeChunk.y * 20) - 10;
+    this->camera.renderingCoords.z = this->camera.transform.z - (this->camera.activeChunk.y * 20) - 10;
 
 
     if ((this->camera.activeChunk.x <= 0) && (this->camera.renderingCoords.x <= -10))

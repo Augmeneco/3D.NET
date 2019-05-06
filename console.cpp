@@ -57,13 +57,16 @@ bool Console::handleInput(Console* console)
     input->setText("");
     if(parsedInput[0] == "tp_chunk")
     {
-        program->world->queueToLoadMutex->lock();
-        program->world->queueToLoad.push(sf::Vector2i(std::stoi(parsedInput[1]), std::stoi(parsedInput[2])));
-        program->world->queueToLoadMutex->unlock();
+        program->addSceneToLoad(sf::Vector2i(std::stoi(parsedInput[1]), std::stoi(parsedInput[2])));
+        for (int x = std::stoi(parsedInput[1]) - 3; x < std::stoi(parsedInput[1]) + 3; x++)
+            for (int y = std::stoi(parsedInput[2]) - 3; y < std::stoi(parsedInput[2]) + 3; y++)
+                if ((x >= 0) && (x <= 65565) &&
+                    (y >= 0) && (y <= 65565))
+                    program->addSceneToLoad(sf::Vector2i(x, y));
         program->camera.activeChunk.x = std::stoi(parsedInput[1]);
         program->camera.activeChunk.y = std::stoi(parsedInput[2]);
-        program->camera.transform.x = 2*(program->camera.activeChunk.x * 20 + program->camera.renderingCoords.x);
-        program->camera.transform.z = 2*(program->camera.activeChunk.y * 20 + program->camera.renderingCoords.z);
+        program->camera.transform.x = (program->camera.activeChunk.x * -20 - 10 - program->camera.renderingCoords.x) / -1.0;
+        program->camera.transform.z = (program->camera.activeChunk.y * -20 - 10 - program->camera.renderingCoords.z) / -1.0;
     }
     else if (parsedInput[0] == "max_fps")
     {
