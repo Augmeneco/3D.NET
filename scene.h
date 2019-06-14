@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 #include <vector>
+#include <mutex>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 #include "object.h"
@@ -9,6 +10,7 @@
 class Scene
 {
 public:
+    std::mutex* sceneLock;
     sf::Vector2i coordinates;
     sf::IpAddress ip;
     sf::Clock lastUpdateTime;

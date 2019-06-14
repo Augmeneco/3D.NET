@@ -2,6 +2,7 @@
 
 Scene::Scene()
 {
+    this->sceneLock = new std::mutex();
     Object* obj = new Object();
     this->rootObject = obj;
     obj->rootObject = obj;

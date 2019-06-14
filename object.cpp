@@ -2,6 +2,8 @@
 #include "components/transform.h"
 #include "components/model.h"
 #include "object.h"
+#include <typeinfo>
+#include <iostream>
 
 
 Object::Object()

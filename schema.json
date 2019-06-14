@@ -1,5 +1,3 @@
-3D.NET/0.1 200 OK
-
 {
     "tag": "root",
     "components":
@@ -28,7 +26,7 @@
                 "transform":
                 {
                     "x": 1,
-                    "y": 0,
+                    "y": 2,
                     "z": 0,
 
                     "pitch": 0,
@@ -41,7 +39,8 @@
                 },
                 "model":
                 {
-                    "model_uri": "",
+                    "uri": "./object.obj",
+                    "texture_uri": "./object.bmp",
                     "verticies":
                     [
 [0, 0, 1],

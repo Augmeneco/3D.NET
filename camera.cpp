@@ -30,7 +30,6 @@ void Camera::moveTo(float x, float y, float z)
 
 void Camera::move(float x, float y, float z)
 {
-
     this->transform.x += x;
     this->transform.y += y;
     this->transform.z += z;
